@@ -6,10 +6,10 @@ Created on Thu May 28 19:44:52 2020
 """
 
 
-from plots.plotlys import  SingleScatterPlot
-from plots.plotlys import  MultipleScatterSubPlots
-from plots.plotlys import add_point_to_widget
-from plots.plotlys import add_point_to_subplot_widget
+from pct.plots.plotlys import  SingleScatterPlot
+from pct.plots.plotlys import  MultipleScatterSubPlots
+from pct.plots.plotlys import add_point_to_widget
+from pct.plots.plotlys import add_point_to_subplot_widget
 import numpy as np
 
 

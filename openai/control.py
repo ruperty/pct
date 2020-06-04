@@ -9,11 +9,11 @@ Created on Tue May 26 18:53:14 2020
 from plotly.offline import plot
 import plotly.graph_objs as go
 import numpy as np
-import openai.utils as ou
+import pct.openai.utils as ou
 import rutils.rmath as rm
 from rutils.errors import root_mean_squared_error
-from openai.cpplots import add_cartpolepoints_to_widget
-from openai.cpplots import add_cartpole_positions_to_widget
+from pct.openai.cpplots import add_cartpolepoints_to_widget
+from pct.openai.cpplots import add_cartpole_positions_to_widget
 import math
 
 """
@@ -120,19 +120,7 @@ def controller(ctr, pole_angle_ref, state, gains, figures, serror, sfactor, prev
     
     figures.add_points( ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 
                    cart_position_ref, cart_position, cart_velocity_ref, cart_velocity, action, error, serror)
-    
-    #value_figures.add_points(ctr, action, error)
-                
-    #update_angle_figure(ctr, figures[0], pole_angle_ref, pole_angle)
-    
-    """print( "%-5d [%-8.4f %-8.4f] [%-8.4f %-8.4f] [%-8.4f %-8.4f] [%-8.4f %-8.4f] %-8.4f" %(
-            ctr, pole_angle_ref, pole_angle, 
-            pole_velocity_ref, pole_velocity, 
-            cart_position_ref, cart_position, 
-            cart_velocity_ref, cart_velocity,
-            power))
-    """
-    
+       
 
     return action, serror, power
 
