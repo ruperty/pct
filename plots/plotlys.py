@@ -9,6 +9,7 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly
+import numpy as np
 
 colors = plotly.colors.DEFAULT_PLOTLY_COLORS
 
@@ -57,11 +58,17 @@ class MultipleScatterSubPlots(BasePlots):
         self.title=title
         self.figure = make_subplots(rows, cols, subplot_titles=(subplots_titles))
         self.traces_per_subplot=traces
+        self.data = list()#[] #np.empty(rows*cols*traces)
+ 
         ctr=0
         for row in range(rows):
             for col in range(cols):
                 color_ctr = 0
                 for trace in range(traces):
+                    xy = list()
+                    xy.append(list())
+                    xy.append(list())
+                    self.data.append(xy)
                     self.figure.add_trace(go.Scatter(x=[], y=[], name=trace_names[ctr], 
                                         line=dict(width=1, color=colors[color_ctr]), 
                                         marker=dict(size=3,color=colors[color_ctr]),
@@ -72,9 +79,15 @@ class MultipleScatterSubPlots(BasePlots):
 
         self.figure.update_layout(height=height, width=width, title_text=title)
        
-        
-        
+    
     def add_point(self, subplot, trace, x, y):    
+        index = subplot*self.traces_per_subplot+trace
+        
+        self.data[index][0].append(x)
+        self.data[index][1].append(y)
+        
+        
+    def add_point_to_figure(self, subplot, trace, x, y):    
         index = subplot*self.traces_per_subplot+trace
         
         newx = self.figure.data[index].x + (x,)
@@ -83,7 +96,12 @@ class MultipleScatterSubPlots(BasePlots):
         newy = self.figure.data[index].y + (y,)
         self.figure.data[index].y=newy
         
-        
+    def add_data(self):
+        index = 0
+        for datalist in self.figure.data:
+            datalist.x = self.data[index][0]
+            datalist.y = self.data[index][1]
+            index=index+1
   
     
  

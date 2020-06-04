@@ -17,7 +17,9 @@ class BaseSpecificPlots():
     #def add_point(self, subplot, trace, x, y):    
     #    self.figure.add_point(subplot, trace, x, y)
  
+
     def show(self):
+        self.figure.add_data()
         self.figure.show()
 
     def getFigure(self):
@@ -43,8 +45,24 @@ class CartpoleControlPlots(BaseSpecificPlots):
                      "cart_position_ref","cart_position", "cart_velocity_ref", "cart_velocity",
                      "action", "", "error", "serror"]
         self.figure = MultipleScatterSubPlots("Control Unit Values"+sub_title, subplots_titles, trace_names, 6, 1, 2,  width, height)
-
+        #print(self.figure.data)
         
+    def add_points_to_figure(self, ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 
+                   cart_position_ref, cart_position, cart_velocity_ref, cart_velocity, action, error, serror):
+        self.figure.add_point_to_figure(0, 0, ctr, np.rad2deg(pole_angle_ref))
+        self.figure.add_point_to_figure(0, 1, ctr, np.rad2deg(pole_angle))
+        self.figure.add_point_to_figure(1, 0, ctr, pole_velocity_ref)
+        self.figure.add_point_to_figure(1, 1, ctr, pole_velocity)
+        self.figure.add_point_to_figure(2, 0, ctr, cart_position_ref)
+        self.figure.add_point_to_figure(2, 1, ctr, cart_position)
+        self.figure.add_point_to_figure(3, 0, ctr, cart_velocity_ref)
+        self.figure.add_point_to_figure(3, 1, ctr, cart_velocity)
+        if action==0: action = -1
+        self.figure.add_point_to_figure(4, 0, ctr, action)
+        self.figure.add_point_to_figure(5, 0, ctr, error)
+        self.figure.add_point_to_figure(5, 1, ctr, serror)
+
+
     def add_points(self, ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 
                    cart_position_ref, cart_position, cart_velocity_ref, cart_velocity, action, error, serror):
         self.figure.add_point(0, 0, ctr, np.rad2deg(pole_angle_ref))
@@ -59,6 +77,8 @@ class CartpoleControlPlots(BaseSpecificPlots):
         self.figure.add_point(4, 0, ctr, action)
         self.figure.add_point(5, 0, ctr, error)
         self.figure.add_point(5, 1, ctr, serror)
+        
+
 
 
 def add_cartpolepoints_to_widget(widget, tps, ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 
