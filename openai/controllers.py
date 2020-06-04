@@ -6,12 +6,12 @@ Created on Tue May 26 18:53:14 2020
 """
 
 
-from plotly.offline import plot
+#from plotly.offline import plot
 import plotly.graph_objs as go
 import numpy as np
 import pct.openai.utils as ou
-import rutils.rmath as rm
-from rutils.errors import root_mean_squared_error
+import pct.utilities.rmath as rm
+from pct.utilities.errors import root_mean_squared_error
 from pct.openai.cpplots import add_cartpolepoints_to_widget
 from pct.openai.cpplots import add_cartpole_positions_to_widget
 import math
@@ -25,8 +25,7 @@ def get_gains(gains):
     return pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain
 """
 
-def get_gains(gains):
-    return (i for i in gains)
+
 
 
 def sigmoid(r, p, g, scale):
@@ -48,7 +47,7 @@ def integrator(r, p, g, s, o):
 def moving_controller(ctr, pole_position_ref, state, gains, slow, figures, position_figure, serror, sfactor, scale, prev_power, plot):
     action =1
     cart_position,    cart_velocity ,    pole_angle , pole_velocity =ou.get_obs(state)        
-    pole_position_gain, pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = get_gains(gains)
+    pole_position_gain, pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = ou.get_gains(gains)
 
     pole_position=cart_position+math.sin(pole_angle)
     pole_angle_ref,pole_position_error=sigmoid(pole_position_ref, pole_position, pole_position_gain, scale)
@@ -81,7 +80,7 @@ def moving_controller(ctr, pole_position_ref, state, gains, slow, figures, posit
 def moving_pole_angle_controller(ctr, pole_angle_ref, state, gains, slow, figures, serror, sfactor, plot):
     action =1
     cart_position,    cart_velocity ,    pole_angle , pole_velocity =ou.get_obs(state)
-    pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = get_gains(gains)
+    pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = ou.get_gains(gains)
     
     pole_velocity_ref,pole_angle_error=proportional(pole_angle_ref, pole_angle, pole_angle_gain)
     cart_position_ref,pole_velocity_error=integrator(pole_velocity_ref, pole_velocity, pole_velocity_gain, slow, cart_position)
@@ -105,7 +104,7 @@ def moving_pole_angle_controller(ctr, pole_angle_ref, state, gains, slow, figure
 def controller(ctr, pole_angle_ref, state, gains, figures, serror, sfactor, prev_power):
     action =1
     cart_position,    cart_velocity ,    pole_angle , pole_velocity =ou.get_obs(state)
-    pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = get_gains(gains)
+    pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = ou.get_gains(gains)
     
     pole_velocity_ref,pole_angle_error=proportional(pole_angle_ref, pole_angle, pole_angle_gain)
     cart_position_ref,pole_velocity_error=proportional(pole_velocity_ref, pole_velocity, pole_velocity_gain)
@@ -140,6 +139,8 @@ def update_angle_figure(ctr, figure, pole_angle_ref, pole_angle):
     newy1 =np.append(   newy1,pole_angle) 
     figure.data[1].y=newy1
 
+
+"""
 def plot_figures(figures):
     for figure in figures:
         plot(figure)
@@ -154,3 +155,4 @@ def set_figures():
     #angle_fig
     
     return [angle_fig]
+"""
