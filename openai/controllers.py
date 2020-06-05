@@ -16,17 +16,6 @@ from pct.openai.cpplots import add_cartpolepoints_to_widget
 from pct.openai.cpplots import add_cartpole_positions_to_widget
 import math
 
-"""
-def get_gains(gains):
-    pole_angle_gain=gains[0]
-    pole_velocity_gain=gains[1]
-    cart_position_gain=gains[2]
-    cart_velocity_gain=gains[3]
-    return pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain
-"""
-
-
-
 
 def sigmoid(r, p, g, scale):
     e=r-p

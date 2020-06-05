@@ -9,7 +9,7 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly
-import numpy as np
+
 
 colors = plotly.colors.DEFAULT_PLOTLY_COLORS
 
@@ -24,6 +24,14 @@ class BasePlots():
  
     def getFigure(self):
         return self.figure
+    
+    def add_data(self):
+        index = 0
+        for datalist in self.figure.data:
+            datalist.x = self.data[index][0]
+            datalist.y = self.data[index][1]
+            index=index+1
+
 
 class SingleScatterPlot(BasePlots):
     def __init__(self, title, trace_names, traces=2, width=1400, height=1000):
@@ -31,7 +39,13 @@ class SingleScatterPlot(BasePlots):
         ctr=0
         color_ctr = 0
         self.figure=go.Figure()
+        self.data = list()
+
         for trace in range(traces):
+            xy = list()
+            xy.append(list())
+            xy.append(list())
+            self.data.append(xy)
             self.figure.add_trace(go.Scatter(x=[], y=[], name=trace_names[ctr], 
                                 line=dict(width=1, color=colors[color_ctr]), 
                                 marker=dict(size=3,color=colors[color_ctr]),
@@ -40,16 +54,20 @@ class SingleScatterPlot(BasePlots):
             ctr=ctr+1
 
         self.figure.update_layout(height=height, width=width, title_text=title)
-       
         
-        
-    def add_point(self, index, x, y):            
+    def add_point_to_figure(self, index, x, y):            
         newx = self.figure.data[index].x + (x,)
         self.figure.data[index].x=newx
 
         newy = self.figure.data[index].y + (y,)
         self.figure.data[index].y=newy
     
+    def add_pointx(self, index, x, y):            
+        newx = self.figure.data[index].x + (x,)
+        self.figure.data[index].x=newx
+
+        newy = self.figure.data[index].y + (y,)
+        self.figure.data[index].y=newy
     
 
 
@@ -96,12 +114,6 @@ class MultipleScatterSubPlots(BasePlots):
         newy = self.figure.data[index].y + (y,)
         self.figure.data[index].y=newy
         
-    def add_data(self):
-        index = 0
-        for datalist in self.figure.data:
-            datalist.x = self.data[index][0]
-            datalist.y = self.data[index][1]
-            index=index+1
   
     
  
