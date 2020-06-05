@@ -101,7 +101,7 @@ def moving_pole_angle_controller(ctr, pole_angle_ref, state, gains, slow, figure
 
 
 
-def controller(ctr, pole_angle_ref, state, gains, figures, serror, sfactor, prev_power):
+def controller(ctr, pole_angle_ref, state, gains, figures, serror, sum_error_ma, sfactor, prev_power):
     action =1
     cart_position,    cart_velocity ,    pole_angle , pole_velocity =ou.get_obs(state)
     pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = ou.get_gains(gains)
@@ -114,14 +114,17 @@ def controller(ctr, pole_angle_ref, state, gains, figures, serror, sfactor, prev
     if power>=0:
         action=0
         
+    sum_error = pole_angle_error+pole_velocity_error+cart_position_error+cart_velocity_error
+    sum_error_ma=rm.smooth( sum_error, sum_error_ma, sfactor) 
+    
     error=root_mean_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
     serror=rm.smooth( error, serror, sfactor) 
     
     figures.add_points( ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 
-                   cart_position_ref, cart_position, cart_velocity_ref, cart_velocity, action, error, serror)
+                   cart_position_ref, cart_position, cart_velocity_ref, cart_velocity, action, sum_error_ma, serror)
        
 
-    return action, serror, power
+    return action, serror, sum_error_ma, power
 
 def update_angle_figure(ctr, figure, pole_angle_ref, pole_angle):
     newx = np.array(figure.data[0].x)

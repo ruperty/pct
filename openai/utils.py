@@ -6,6 +6,8 @@ Created on Sat May 30 15:54:13 2020
 """
 
 
+def get_gains(gains):
+    return (i for i in gains)
 
 def get_obs(observation):
     cart_position = observation[0]

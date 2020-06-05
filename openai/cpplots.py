@@ -40,10 +40,10 @@ class CartpolePositionPlot(BaseSpecificPlots):
 
 class CartpoleControlPlots(BaseSpecificPlots):
     def __init__(self,sub_title, width, height):
-        subplots_titles=["pole_angle", "pole_velocity", "cart_position", "cart_velocity", "action", "global error (rms)"]
+        subplots_titles=["pole_angle", "pole_velocity", "cart_position", "cart_velocity", "action", "global error"]
         trace_names=["pole_angle_ref", "pole_angle", "pole_velocity_ref", "pole_velocity", 
                      "cart_position_ref","cart_position", "cart_velocity_ref", "cart_velocity",
-                     "action", "", "error", "serror"]
+                     "action", "", "sum", "rms"]
         self.figure = MultipleScatterSubPlots("Control Unit Values"+sub_title, subplots_titles, trace_names, 6, 1, 2,  width, height)
         #print(self.figure.data)
         
