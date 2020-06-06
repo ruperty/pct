@@ -30,7 +30,7 @@ class BaseSpecificPlots():
 class CartpolePositionPlot(BaseSpecificPlots):
     def __init__(self, width, height):
         trace_names=["pole_position_ref", "pole_position"]
-        self.figure = SingleScatterPlot("Pole Postion", trace_names,  2,  width, height)
+        self.figure = SingleScatterPlot("Pole Position", trace_names,  2,  width, height)
 
     def add_points(self, ctr, pole_position_ref, pole_position):
         self.figure.add_point(0, ctr, pole_position_ref)
