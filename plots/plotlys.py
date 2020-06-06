@@ -62,12 +62,11 @@ class SingleScatterPlot(BasePlots):
         newy = self.figure.data[index].y + (y,)
         self.figure.data[index].y=newy
     
-    def add_pointx(self, index, x, y):            
-        newx = self.figure.data[index].x + (x,)
-        self.figure.data[index].x=newx
-
-        newy = self.figure.data[index].y + (y,)
-        self.figure.data[index].y=newy
+    
+    def add_point(self, index, x, y):            
+        self.data[index][0].append(x)
+        self.data[index][1].append(y)
+        
     
 
 
