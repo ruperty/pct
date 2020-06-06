@@ -28,9 +28,9 @@ class BaseSpecificPlots():
 
 
 class CartpolePositionPlot(BaseSpecificPlots):
-    def __init__(self, width, height):
+    def __init__(self, width=None, height=None):
         trace_names=["pole_position_ref", "pole_position"]
-        self.figure = SingleScatterPlot("Pole Position", trace_names,  2,  width, height)
+        self.figure = SingleScatterPlot("Pole Position", trace_names,  2,  width=width, height=height)
 
     def add_points(self, ctr, pole_position_ref, pole_position):
         self.figure.add_point(0, ctr, pole_position_ref)
@@ -39,12 +39,13 @@ class CartpolePositionPlot(BaseSpecificPlots):
 
 
 class CartpoleControlPlots(BaseSpecificPlots):
-    def __init__(self,sub_title, width, height):
+    def __init__(self,sub_title, width=None, height=None):
         subplots_titles=["pole_angle", "pole_velocity", "cart_position", "cart_velocity", "action", "global error"]
         trace_names=["pole_angle_ref", "pole_angle", "pole_velocity_ref", "pole_velocity", 
                      "cart_position_ref","cart_position", "cart_velocity_ref", "cart_velocity",
                      "action", "", "sum", "rms"]
-        self.figure = MultipleScatterSubPlots("Control Unit Values"+sub_title, subplots_titles, trace_names, 6, 1, 2,  width, height)
+        self.figure = MultipleScatterSubPlots("Control Unit Values"+sub_title, subplots_titles, trace_names, 
+                                              6, 1, 2,  width=width, height=height)
         #print(self.figure.data)
         
     def add_points_to_figure(self, ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 

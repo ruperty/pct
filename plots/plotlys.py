@@ -34,7 +34,7 @@ class BasePlots():
 
 
 class SingleScatterPlot(BasePlots):
-    def __init__(self, title, trace_names, traces=2, width=1400, height=1000):
+    def __init__(self, title, trace_names, traces=2, width=None, height=None):
         self.title=title
         ctr=0
         color_ctr = 0
@@ -71,7 +71,7 @@ class SingleScatterPlot(BasePlots):
 
 
 class MultipleScatterSubPlots(BasePlots):
-    def __init__(self, title, subplots_titles, trace_names, rows=2, cols=1, traces=2, width=1400, height=1000):
+    def __init__(self, title, subplots_titles, trace_names, rows=2, cols=1, traces=2, width=None, height=None):
         self.title=title
         self.figure = make_subplots(rows, cols, subplot_titles=(subplots_titles))
         self.traces_per_subplot=traces
