@@ -99,10 +99,10 @@ def controller(ctr, pole_angle_ref, state, gains, figures, serror, sum_error_ma,
     cart_position_ref,pole_velocity_error=proportional(pole_velocity_ref, pole_velocity, pole_velocity_gain)
     cart_velocity_ref,cart_position_error=proportional(cart_position_ref, cart_position, cart_position_gain)
     power,cart_velocity_error=proportional(cart_velocity_ref, cart_velocity, cart_velocity_gain)
-    #print(power, end=" ")
+    print(power, end=" ")
     #power = prev_power + 0.05 * power
     power= rm.smooth(power, prev_power, 0.8)
-    #print(power)
+    print(power)
     if power>=0:
         action=0
         
