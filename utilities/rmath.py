@@ -19,13 +19,16 @@ def sigmoid(x, range, scale) :
 
 class Counter(object):
 
-  def __init__(self, limit, init=0, step=1):
+  def __init__(self, limit, init=0, step=1, plot=10, print=100):
       self.limit=limit
       self.counter=init
       self.step=step
+      self.plot=plot
+      self.print=print
 
   def __call__(self):
       self.counter+=self.step
+      return self.counter
   
   def get(self):
       return self.counter
@@ -36,7 +39,7 @@ class Counter(object):
   def set_limit(self, limit):
       self.limit=limit
 
-
+  
 
 """
 rang=0.4
