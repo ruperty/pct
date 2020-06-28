@@ -12,5 +12,5 @@ def root_squared_sum_error( errors ):
     return  math.sqrt(pow(np.sum( errors ),2 ) )
 
 
-def root_mean_squared_error( errors ):
+def root_sum_squared_error( errors ):
     return  math.sqrt(np.sum( np.square( errors ) ))

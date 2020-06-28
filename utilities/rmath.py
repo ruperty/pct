@@ -19,7 +19,7 @@ def sigmoid(x, range, scale) :
 
 class Counter(object):
 
-  def __init__(self, limit, init=0, step=1, plot=10, print=100):
+  def __init__(self, limit=1000, init=0, step=1, plot=10, print=100):
       self.limit=limit
       self.counter=init
       self.step=step

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 def move_figure(f, x, y):
     """Move figure's upper left corner to pixel (x, y)"""
     backend = matplotlib.get_backend()
-    print(backend)
+    #print(backend)
     if backend == 'TkAgg':
         f.canvas.manager.window.wm_geometry("+%d+%d" % (x, y))
     elif backend == 'WXAgg':
@@ -60,7 +60,8 @@ class SubPlotter(object):
                 plot["ys"][i].pop(0)
             
         
-
+  def show(self):
+    plt.show()
         
   def draw(self):
     for plot in self.plots:
