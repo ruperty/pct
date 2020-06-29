@@ -27,6 +27,7 @@ class BaseSpecificPlots():
 
 
 
+
 class CartpolePositionPlot(BaseSpecificPlots):
     def __init__(self, width=None, height=None):
         trace_names=["pole_position_ref", "pole_position"]
@@ -36,6 +37,15 @@ class CartpolePositionPlot(BaseSpecificPlots):
         self.figure.add_point(0, ctr, pole_position_ref)
         self.figure.add_point(1, ctr, pole_position)
 
+
+class CartpoleErrorsPlot(BaseSpecificPlots):
+    def __init__(self, width=None, height=None):
+        trace_names=["pole_angle", "pole_velocity",  "cart_position", "cart_velocity"]
+        self.figure = SingleScatterPlot("Errors", trace_names,  4,  width=width, height=height)
+
+    def add_points(self, ctr, errors):
+        for i in range(len(errors)):
+            self.figure.add_point(i, ctr, errors[i])
 
 
 class CartpoleControlPlots(BaseSpecificPlots):

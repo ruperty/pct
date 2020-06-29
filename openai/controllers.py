@@ -11,7 +11,7 @@ import plotly.graph_objs as go
 import numpy as np
 import pct.openai.utils as ou
 import pct.utilities.rmath as rm
-from pct.utilities.errors import root_mean_squared_error
+from pct.utilities.errors import root_sum_squared_error
 from pct.openai.cpplots import add_cartpolepoints_to_widget
 from pct.openai.cpplots import add_cartpole_positions_to_widget
 import math
@@ -49,7 +49,7 @@ def moving_controller(ctr, pole_position_ref, state, gains, slow, figures, posit
     if power>=0:
         action=0
         
-    error=root_mean_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
+    error=root_sum_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
     serror=rm.smooth( error, serror, sfactor) 
     if plot:
         if type(figures)==go.FigureWidget:
@@ -78,7 +78,7 @@ def moving_pole_angle_controller(ctr, pole_angle_ref, state, gains, slow, figure
     if power>=0:
         action=0
         
-    error=root_mean_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
+    error=root_sum_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
     serror=rm.smooth( error, serror, sfactor) 
     
     if plot:
@@ -109,7 +109,7 @@ def controller(ctr, pole_angle_ref, state, gains, figures, serror, sum_error_ma,
     sum_error = pole_angle_error+pole_velocity_error+cart_position_error+cart_velocity_error
     sum_error_ma=rm.smooth( sum_error, sum_error_ma, sfactor) 
     
-    error=root_mean_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
+    error=root_sum_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
     serror=rm.smooth( error, serror, sfactor) 
     
     figures.add_points( ctr, pole_angle_ref, pole_angle, pole_velocity_ref, pole_velocity, 

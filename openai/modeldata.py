@@ -20,7 +20,7 @@ class CartpoleData(object):
     self.error=self.loss_fn(current, target)
     self.global_error=rm.smooth( self.error, self.global_error, self.loss_smooth) 
     #print(self.error, self.global_error)
-    return self.error
+    return self.global_error
         
   def get_error(self):
       return self.global_error
