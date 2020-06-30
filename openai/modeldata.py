@@ -14,10 +14,13 @@ class CartpoleData(object):
     self.global_error= 0
     self.loss_fn= loss_fn
     self.loss_smooth= loss_smooth
- 
+    self.n=1
+    self.mean=1
     
   def add_error_data(self, current, target):
     self.error=self.loss_fn(current, target)
+    self.mean = self.mean+(self.error-self.mean)/self.n
+    self.n+=1
     self.global_error=rm.smooth( self.error, self.global_error, self.loss_smooth) 
     #print(self.error, self.global_error)
     return self.global_error
@@ -27,3 +30,6 @@ class CartpoleData(object):
 
   def get_local_error(self):
       return self.error
+
+  def get_mean(self):
+      return self.mean
