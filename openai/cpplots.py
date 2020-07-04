@@ -48,6 +48,16 @@ class CartpoleErrorsPlot(BaseSpecificPlots):
             self.figure.add_point(i, ctr, errors[i])
 
 
+class CartpoleDataPlot(BaseSpecificPlots):
+    def __init__(self, type, width=None, height=None):
+        trace_names=["pole_angle", "pole_velocity",  "cart_position", "cart_velocity"]
+        self.figure = SingleScatterPlot(type, trace_names,  4,  width=width, height=height)
+
+    def add_points(self, ctr, errors):
+        for i in range(len(errors)):
+            self.figure.add_point(i, ctr, errors[i])
+
+
 class CartpoleControlPlots(BaseSpecificPlots):
     def __init__(self,sub_title, width=None, height=None):
         subplots_titles=["pole_angle", "pole_velocity", "cart_position", "cart_velocity", "action", "global error"]
