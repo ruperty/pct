@@ -13,8 +13,8 @@ import pct.utilities.rmath as rm
 
 
 from tensorflow import keras
-from dl.utils import get_optimizer
-from dl.utils import get_loss_function
+from pct.dl.utils import get_optimizer
+from pct.dl.utils import get_loss_function
 from pct.openai.utils import EnvState
 from pct.plots.matplots import SubPlotter
 from pct.utilities.rmath import Counter
