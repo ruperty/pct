@@ -75,18 +75,8 @@ class CartpoleTuning(object):
             else:
                 loss_value=self.non_training_step(inputs, desired_output)
              
-            if (self.counter.get()+1) % self.counter.plot ==0 :
-                if self.live_display:
-                    self.plotter.add_data(0, self.counter.get(), [loss_value, self.data.get_local_error()])
-                    self.plotter.draw()
-                if self.render:
-                    self.env.render()
-                    
-            if (self.counter.get()+1) % self.counter.print == 0:
-                wts = self.model.get_weights()
-                if self.print:
-                   print("%4d loss %-10.3f %-10.3f %-10.3f %-10.3f %-10.3f " % (self.counter.get()+1, loss_value, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
-
+            self.display(loss_value)
+            
             self.counter()
             if self.env_state():
                 wts = self.model.get_weights()
@@ -97,6 +87,25 @@ class CartpoleTuning(object):
                 break 
             
         return self.model.get_weights()
+    
+    
+    def display(self, loss_value):
+        if (self.counter.get()+1) % self.counter.plot ==0 :
+            if self.live_display:
+                self.plotter.add_data(0, self.counter.get(), [loss_value, self.data.get_local_error()])
+                self.plotter.draw()
+            if self.render:
+                self.env.render()
+                
+        if self.widget != None:
+            newy = self.widget.data[0].y + loss_value
+            self.widget.data[0].y=newy
+        
+        if (self.counter.get()+1) % self.counter.print == 0:
+            wts = self.model.get_weights()
+            if self.print:
+               print("%4d loss %-10.3f %-10.3f %-10.3f %-10.3f %-10.3f " % (self.counter.get()+1, loss_value, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
+        
 
 
     def training_step(self, inputs, target):
@@ -142,7 +151,10 @@ class CartpoleTuning(object):
         return action
         
             
-    def display_configure(self, x=200, y=200, width=5, height=4, window=1000, live=True, offline=True, render=True, plot_type=PCTVarType.ERROR):
+    def display_configure(self, x=200, y=200, width=5, height=4, window=1000, live=True, 
+                          offline=True, render=True, plot_type=PCTVarType.ERROR, widget=None, widget_frequency=100):
+        self.widget=None
+        self.widget_frequency=widget_frequency
         self.live_display=live
         self.offline=offline
         self.render=render
