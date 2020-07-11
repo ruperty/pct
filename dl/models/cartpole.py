@@ -98,8 +98,9 @@ class CartpoleTuning(object):
                 self.env.render()
                 
         if self.widget != None:
-            newy = self.widget.data[0].y + loss_value
-            self.widget.data[0].y=newy
+            if self.widget_frequency % 100 == 0:
+                newy = self.widget.data[0].y + loss_value
+                self.widget.data[0].y=newy
         
         if (self.counter.get()+1) % self.counter.print == 0:
             wts = self.model.get_weights()
