@@ -64,8 +64,8 @@ class CartpoleTuning(object):
             wts[wt][0]=weights[wt]
             
         self.model.set_weights(wts)
-        if self.print:
-           print("starting weights     %-10.3f %-10.3f %-10.3f %-10.3f" % (wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
+        #if self.print:
+        #   print("starting weights     %-10.3f %-10.3f %-10.3f %-10.3f" % (wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
 
         
     def batch(self, epoch, batch_size, training=False):
