@@ -10,6 +10,7 @@ import tensorflow as tf
 import itertools
 import gym
 import pct.utilities.rmath as rm
+import numpy as np
 
 
 from tensorflow import keras
@@ -104,11 +105,15 @@ class CartpoleTuning(object):
            model_outputs = self.model(inputs, training=True)
            loss = self.data.add_error_data(model_outputs[1], target)
            #loss = self.data.add_error_data([1,1,5,1]* model_outputs[1], target)
+           
         grads = tape.gradient(loss, self.model.trainable_variables)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))
-        if self.offline:
-            self.offline_figure.add_points(self.counter.get(), model_outputs[1][0].numpy())
+        
         loss_value = self.data.get_error()
+        if self.offline:
+            plot_errors =  model_outputs[1][0].numpy()
+            plot_errors = np.append(plot_errors,loss_value)
+            self.offline_figure.add_points(self.counter.get(),plot_errors )
         
         self.env_state.set_action(self.get_action(model_outputs[0][0][0].numpy()))
         return loss_value
@@ -117,10 +122,13 @@ class CartpoleTuning(object):
 
         model_outputs = self.model(inputs)  
         self.data.add_error_data( model_outputs[1], target)
-        if self.offline:
-            self.offline_figure.add_points(self.counter.get(), model_outputs[1][0].numpy())
         loss_value = self.data.get_error()
-        
+
+        if self.offline:
+            plot_errors =  model_outputs[1][0].numpy()
+            plot_errors = np.append(plot_errors,loss_value)
+            self.offline_figure.add_points(self.counter.get(),plot_errors )
+                    
         self.env_state.set_action(self.get_action(model_outputs[0][0][0].numpy()))
         return loss_value
             
