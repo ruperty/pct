@@ -12,10 +12,10 @@ from tensorflow.python.keras.utils import losses_utils
 
 from tensorflow.python.keras.losses import LossFunctionWrapper
 
-from dl.functions import squared_sum_error
-from dl.functions import my_mean_squared_error
-from dl.functions import root_squared_sum_error
-from dl.functions import root_sum_squared_error
+from pct.dl.functions import squared_sum_error
+from pct.dl.functions import my_mean_squared_error
+from pct.dl.functions import root_squared_sum_error
+from pct.dl.functions import root_sum_squared_error
 
 
 
