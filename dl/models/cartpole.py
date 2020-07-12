@@ -9,6 +9,7 @@ Created on Sun Jun 28 11:28:04 2020
 import tensorflow as tf
 import itertools
 import gym
+import math
 import pct.utilities.rmath as rm
 import numpy as np
 
@@ -81,8 +82,14 @@ class CartpoleTuning(object):
             if self.env_state():
                 wts = self.model.get_weights()
                 if self.print:
-                   print("finished")
-                   print("wts ", wts)
+                   #print("finished")
+                   #print("wts ", np.concatenate(np.concatenate(wts)))
+                   #print(inputs)
+                   #print(inputs['perception_pa'])
+                   print("Cartpole failed with a poleangle of %4.2f degrees and global error of %4.2f."
+                          % (math.degrees( inputs['perception_pa']), loss_value))
+                   print("An optimised control system for this case would have residual error of around 0.20 or less")
+                                           
                 self.counter.set_limit(epoch) 
                 break 
             
@@ -123,6 +130,7 @@ class CartpoleTuning(object):
         if self.offline:
             plot_errors =  model_outputs[1][0].numpy()
             plot_errors = np.append(plot_errors,loss_value)
+            #print(plot_errors)
             self.offline_figure.add_points(self.counter.get(),plot_errors )
         
         self.env_state.set_action(self.get_action(model_outputs[0][0][0].numpy()))
