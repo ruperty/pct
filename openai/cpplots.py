@@ -56,6 +56,9 @@ class CartpoleDataPlot(BaseSpecificPlots):
     def add_points(self, ctr, errors):
         for i in range(len(errors)):
             self.figure.add_point(i, ctr, errors[i])
+            
+    def get_data_trace(self, index):
+        return self.figure.get_data_trace(index)
 
 
 class CartpoleControlPlots(BaseSpecificPlots):

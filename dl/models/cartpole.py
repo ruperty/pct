@@ -228,6 +228,9 @@ class CartpoleTuning(object):
                 out = self.batch(epoch, batch_size, training)
         return out
     
+    def get_error_data(self):
+        self.offline_figure.get_data_trace(4)
+    
     def show(self):
         if self.offline:
             self.offline_figure.show()
