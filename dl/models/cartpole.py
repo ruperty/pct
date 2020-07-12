@@ -191,8 +191,11 @@ class CartpoleTuning(object):
             self.env =  vid.wrap_env(genv)
         else:
             self.env = genv
-        self.env.reset()
+            self.env.reset()
         self.env_state = EnvState()
+        
+    def get_env(self):
+        return self.env
         
     def gen_obs(self):
         for i in itertools.count(1):
