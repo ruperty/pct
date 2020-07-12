@@ -194,6 +194,9 @@ class CartpoleTuning(object):
             self.env.reset()
         self.env_state = EnvState()
         
+    def show_video(self):
+        vid.show_video()
+        
     def get_env(self):
         return self.env
         
