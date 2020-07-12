@@ -12,7 +12,7 @@ import gym
 import math
 import pct.utilities.rmath as rm
 import numpy as np
-
+import pct.openai.video  as vid
 
 from tensorflow import keras
 from pct.dl.utils import get_optimizer
@@ -36,12 +36,14 @@ class PCTVarType(Enum):
 
 class CartpoleTuning(object):
 
-    def __init__(self, model_name="CartPole", env_name="CartPole-v1", max_episode_steps=100000, trainable=[True, True, True, False], print=True):
+    def __init__(self, model_name="CartPole", env_name="CartPole-v1", max_episode_steps=100000, trainable=[True, True, True, False], print=True , video_wrap=False):
         self.print=print
         self.live_display=False
         self.model_name=model_name
         self.create_model(model_name, trainable)
+        self.video_wrap=video_wrap
         self.create_env(env_name, max_episode_steps)
+
         self.create_dataset()
         self.prev_power=0
         
@@ -160,13 +162,15 @@ class CartpoleTuning(object):
         return action
         
             
-    def display_configure(self, x=200, y=200, width=5, height=4, window=1000, live=False, 
-                          offline=True, render=True, plot_type=PCTVarType.ERROR, widget=None, widget_frequency=100):
+    def display_configure(self, x=200, y=200, width=5, height=4, window=1000, live=False, offline=True, render=True, 
+                          plot_type=PCTVarType.ERROR, widget=None, widget_frequency=100):
         self.widget=None
         self.widget_frequency=widget_frequency
         self.live_display=live
         self.offline=offline
         self.render=render
+        
+
         if live: 
             self.plotter = SubPlotter(width, height, self.model_name, [["Loss", "iter", "error", 2, window, 111]])
             move_figure(self.plotter.fig, x, y)
@@ -181,8 +185,12 @@ class CartpoleTuning(object):
 
         
     def create_env(self, env_name, max_episode_steps):
-        self.env = gym.make(env_name)
-        self.env._max_episode_steps = max_episode_steps
+        genv = gym.make(env_name)
+        genv._max_episode_steps = max_episode_steps
+        if self.video_wrap:
+            self.env =  vid.wrap_env(genv)
+        else:
+            self.env = genv
         self.env.reset()
         self.env_state = EnvState()
         
