@@ -237,7 +237,7 @@ class CartpoleTuning(object):
         return out
     
     def get_error_data(self):
-        self.offline_figure.get_data_trace(4)
+        return self.offline_figure.get_data_trace(4)
     
     def show(self):
         if self.offline:

@@ -68,8 +68,7 @@ class SingleScatterPlot(BasePlots):
         self.data[index][1].append(y)
         
     def get_data_trace(self, index):
-        return self.data[index][0], self.data[index][1]
-        
+        return  self.data[index]
     
 
 
