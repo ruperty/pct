@@ -6,7 +6,7 @@ Created on Thu May 28 19:44:52 2020
 """
 
 
-import numpy
+import numpy as np
 import plotly.graph_objects as go
 from pct.plots.plotlys import  SingleScatterPlot
 from pct.plots.plotlys import  MultipleScatterSubPlots
@@ -167,7 +167,7 @@ class CartpoleControlValuesPlots(BaseSpecificPlots):
         
 
 def load_3d_landscape(filename, max):
-    data = numpy.load(filename, allow_pickle=True)
+    data = np.load(filename, allow_pickle=True)
     
     type=data[0]
     other_wt_name=data[1]
@@ -177,7 +177,7 @@ def load_3d_landscape(filename, max):
     
     x_data=data[3]
     y_data=data[4]
-    z_data=numpy.clip(data[5], 0, max)
+    z_data=np.clip(data[5], 0, max)
         
     title = 'Loss Landscape {:s} - {:s} {:4.1f}'.format(type,other_wt_name,other_wt)
     scene = dict(xaxis_title=xlabel,yaxis_title=ylabel,zaxis_title='loss')
@@ -190,6 +190,12 @@ def load_3d_landscape(filename, max):
                       margin=dict(l=100, r=50, b=65, t=90))
     fig.update_yaxes(automargin=True)
     
+    fig.show()
+    
+def scatter_plot(data, title, xtitle, ytitle):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(mode='lines',x=data[0], y=data[1], name=title))
+    fig.update_layout(title=title, xaxis_title=xtitle, yaxis_title=ytitle)
     fig.show()
 
     
