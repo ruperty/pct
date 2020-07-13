@@ -205,8 +205,8 @@ class CartpoleTuning(object):
             obs, rew,dn,inf = self.env.step(self.env_state.get_action())
             self.env_state.set_state(dn)
             #print(obs, rew,dn,inf)
-            yield {"reference_pa":[0.0], "perception_pa":[obs[0]], "perception_pv":[obs[1]], "perception_cp":[obs[2]], 
-                   "perception_cv":[obs[3]]}, [0.0, 0.0, 0.0, 0.0]
+            yield {"reference_pa":[0.0], "perception_pa":[obs[2]], "perception_pv":[obs[3]], "perception_cp":[obs[0]], 
+                   "perception_cv":[obs[1]]}, [0.0, 0.0, 0.0, 0.0]
         
     def create_dataset(self):
         # oh shit!!!
