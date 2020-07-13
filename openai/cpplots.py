@@ -6,11 +6,12 @@ Created on Thu May 28 19:44:52 2020
 """
 
 
+import numpy
+import plotly.graph_objects as go
 from pct.plots.plotlys import  SingleScatterPlot
 from pct.plots.plotlys import  MultipleScatterSubPlots
 from pct.plots.plotlys import add_point_to_widget
 from pct.plots.plotlys import add_point_to_subplot_widget
-import numpy as np
 
 
 class BaseSpecificPlots():
@@ -164,7 +165,8 @@ class CartpoleControlValuesPlots(BaseSpecificPlots):
         
         
         
-def load_3d_landscape(filename):
+
+def load_3d_landscape(filename, max):
     data = numpy.load(filename, allow_pickle=True)
     
     type=data[0]
@@ -174,10 +176,8 @@ def load_3d_landscape(filename):
     ylabel=type[2: 4]
     
     x_data=data[3]
-    #print(x_data)
     y_data=data[4]
-    #print(y_data)
-    z_data=data[5]
+    z_data=numpy.clip(data[5], 0, max)
         
     title = 'Loss Landscape {:s} - {:s} {:4.1f}'.format(type,other_wt_name,other_wt)
     scene = dict(xaxis_title=xlabel,yaxis_title=ylabel,zaxis_title='loss')
@@ -191,4 +191,5 @@ def load_3d_landscape(filename):
     fig.update_yaxes(automargin=True)
     
     fig.show()
+
     
