@@ -209,6 +209,7 @@ class CartpoleTuning(object):
                    "perception_cv":[obs[3]]}, [0.0, 0.0, 0.0, 0.0]
         
     def create_dataset(self):
+        # oh shit!!!
         self.ds_counter = tf.data.Dataset.from_generator(self.gen_obs, 
         output_types=({"reference_pa":tf.float32, "perception_pa":tf.float32, "perception_pv":tf.float32, 
                        "perception_cp":tf.float32, "perception_cv":tf.float32}, tf.float32))
