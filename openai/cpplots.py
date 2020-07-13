@@ -161,4 +161,34 @@ class CartpoleControlValuesPlots(BaseSpecificPlots):
         if action==0: action = -1
         self.figure.add_point(0, 0, ctr, action)
         self.figure.add_point(1, 0, ctr, error)
+        
+        
+        
+def load_3d_landscape(filename):
+    data = numpy.load(filename, allow_pickle=True)
+    
+    type=data[0]
+    other_wt_name=data[1]
+    other_wt=data[2]    
+    xlabel=type[0: 2]
+    ylabel=type[2: 4]
+    
+    x_data=data[3]
+    #print(x_data)
+    y_data=data[4]
+    #print(y_data)
+    z_data=data[5]
+        
+    title = 'Loss Landscape {:s} - {:s} {:4.1f}'.format(type,other_wt_name,other_wt)
+    scene = dict(xaxis_title=xlabel,yaxis_title=ylabel,zaxis_title='loss')
+    
+    fig = go.Figure(data=[go.Surface(z=z_data,x=x_data, y=y_data)])
+    
+    fig.update_layout(title=title, autosize=True,
+                      width=800, height=800, 
+                      scene = scene,
+                      margin=dict(l=100, r=50, b=65, t=90))
+    fig.update_yaxes(automargin=True)
+    
+    fig.show()
     
