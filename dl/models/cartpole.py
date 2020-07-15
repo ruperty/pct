@@ -114,7 +114,7 @@ class CartpoleTuning(object):
         if (self.counter.get()+1) % self.counter.print == 0:
             wts = self.model.get_weights()
             if self.print:
-               print("%4d loss %-10.3f %-10.3f %-10.3f %-10.3f %-10.3f " % (self.counter.get()+1, loss_value, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
+               print("%4d  %-10.3f %-12.3f %-12.3f %-12.3f %-12.3f " % (self.counter.get()+1, loss_value, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
         
 
 
@@ -243,6 +243,10 @@ class CartpoleTuning(object):
         keras.utils.plot_model(self.model, filename, show_shapes=show_shapes) 
 
     def run(self, batch_size, training=False):
+        if self.print:
+            print("                                   Weights " )
+            print("Step  Loss    pole_angle pole_velocity cart_position cart_velocity  " )
+
         out=[]
         runs=self.counter.get_limit()
         for epoch in range(runs):
