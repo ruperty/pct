@@ -90,7 +90,7 @@ class CartpoleTuning(object):
                    #print(inputs['perception_pa'])
                    print("Cartpole failed with a poleangle of %4.2f degrees and global error of %4.2f."
                           % (math.degrees( inputs['perception_pa']), loss_value))
-                   print("An optimised control system for this case would have residual error of around 0.20 or less")
+                   print("An optimised control system for this case would have residual error of around 0.30 or less")
                                            
                 self.counter.set_limit(epoch) 
                 break 
