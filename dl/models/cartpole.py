@@ -47,15 +47,18 @@ class CartpoleTuning(object):
         self.create_dataset()
         self.prev_power=0
         
-    def configure(self, weights, opt_type=None, learning_rate=None, loss_type=None,  loss_smooth=0.9, plot=13, print=100, num_runs=100 ):
-        self.learning_rate=learning_rate
-        self.opt_type=opt_type
+    def configure(self, weights, opt_type=None, learning_rate=None, loss_type=None,  loss_smooth=0.9, plot=13, print=100, num_runs=100, training=False ):
+        self.training=training
+        if self.training:
+            self.learning_rate=learning_rate
+            self.opt_type=opt_type
+            self.optimizer = get_optimizer(opt_type, learning_rate)
+
         self.loss_type=loss_type 
-        self.optimizer = get_optimizer(opt_type, learning_rate)
         self.loss_fn= get_loss_function(loss_type)        
+        self.data = CartpoleData(self.loss_fn, loss_smooth)
         self.set_weights(weights)
         self.counter = Counter(limit=num_runs, plot=plot, print=print)
-        self.data = CartpoleData(self.loss_fn, loss_smooth)
 
     def not_finished(self):
         return self.counter.get() < self.counter.get_limit()
@@ -71,14 +74,14 @@ class CartpoleTuning(object):
         #   print("starting weights     %-10.3f %-10.3f %-10.3f %-10.3f" % (wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
 
         
-    def batch(self, epoch, batch_size, training=False):
+    def batch(self, epoch, batch_size):
         for inputs, desired_output in self.ds_counter.take(batch_size):
-            if training:
+            if self.training:
                 loss_value=self.training_step(inputs, desired_output)
             else:
                 loss_value=self.non_training_step(inputs, desired_output)
              
-            if training:
+            if self.training:
                 if loss_value<self.min_loss:
                     self.min_loss=loss_value
                     self.min_weights=self.model.get_weights()
@@ -96,7 +99,7 @@ class CartpoleTuning(object):
                    print("Cartpole failed with a poleangle of %4.2f degrees and global error of %4.2f."
                           % (math.degrees( inputs['perception_pa']), loss_value))
                    print("An optimised control system for this case would have residual error of around 0.30 or less")
-                   if training:
+                   if self.training:
                        wts = self.min_weights
                        print("Minimum loss %4.2f and weights %-10.3f %-10.3f %-10.3f %-10.3f" % (self.min_loss, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
 
@@ -252,7 +255,7 @@ class CartpoleTuning(object):
     def plot_model(self, filename, show_shapes=False):
         keras.utils.plot_model(self.model, filename, show_shapes=show_shapes) 
 
-    def run(self, batch_size, training=False):
+    def run(self, batch_size):
         if self.print:
             print("                                   Weights " )
             print("Step  Loss    pole_angle pole_velocity cart_position cart_velocity  " )
@@ -261,7 +264,7 @@ class CartpoleTuning(object):
         runs=self.counter.get_limit()
         for epoch in range(runs):
             if self.not_finished():
-                out = self.batch(epoch, batch_size, training)
+                out = self.batch(epoch, batch_size)
         return out
     
     def get_error_data(self):
