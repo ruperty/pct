@@ -109,26 +109,6 @@ class CartpoleTuning(object):
             
         return self.model.get_weights()
     
-    
-    def display(self, loss_value):
-        if (self.counter.get()+1) % self.counter.plot ==0 :
-            if self.live_display:
-                self.plotter.add_data(0, self.counter.get(), [loss_value, self.data.get_local_error()])
-                self.plotter.draw()
-            if self.render:
-                self.env.render()
-                
-        if self.widget != None:
-            if self.widget_frequency % 100 == 0:
-                newy = self.widget.data[0].y + loss_value
-                self.widget.data[0].y=newy
-        
-        if (self.counter.get()+1) % self.counter.print == 0:
-            wts = self.model.get_weights()
-            if self.print:
-               print("%4d  %-10.3f %-12.3f %-12.3f %-12.3f %-12.3f " % (self.counter.get()+1, loss_value, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
-        
-
 
     def training_step(self, inputs, target):
 
@@ -164,6 +144,29 @@ class CartpoleTuning(object):
         self.env_state.set_action(self.get_action(model_outputs[0][0][0].numpy()))
         return loss_value
             
+    
+    def display(self, loss_value):
+        if (self.counter.get()+1) % self.counter.plot ==0 :
+            if self.live_display:
+                self.plotter.add_data(0, self.counter.get(), [loss_value, self.data.get_local_error()])
+                self.plotter.draw()
+            if self.render:
+                self.env.render()
+                
+        if self.widget != None:
+            if self.widget_frequency % 100 == 0:
+                newy = self.widget.data[0].y + loss_value
+                self.widget.data[0].y=newy
+        
+        if (self.counter.get()+1) % self.counter.print == 0:
+            wts = self.model.get_weights()
+            if self.print:
+               print("%4d  %-10.3f %-12.3f %-12.3f %-12.3f %-12.3f " % (self.counter.get()+1, loss_value, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
+        
+
+    
+    
+    
     def get_action(self, power):
         action=0
         power= rm.smooth(power, self.prev_power, 0.75)
