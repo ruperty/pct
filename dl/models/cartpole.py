@@ -263,6 +263,7 @@ class CartpoleTuning(object):
         keras.utils.plot_model(self.model, filename, show_shapes=show_shapes) 
 
     def run(self, batch_size, verbose=False):
+        self.verbose=verbose
         if self.print:
             print("                                   Weights " )
             print("Step  Loss    pole_angle pole_velocity cart_position cart_velocity  " )
