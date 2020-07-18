@@ -47,7 +47,7 @@ class CartpoleTuning(object):
         self.create_dataset()
         self.prev_power=0
         
-    def configure(self, weights, opt_type, learning_rate, loss_type,  loss_smooth=0.9, plot=13, print=100, num_runs=100 ):
+    def configure(self, weights, opt_type=None, learning_rate=None, loss_type=None,  loss_smooth=0.9, plot=13, print=100, num_runs=100 ):
         self.learning_rate=learning_rate
         self.opt_type=opt_type
         self.loss_type=loss_type 

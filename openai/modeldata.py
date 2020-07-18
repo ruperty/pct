@@ -11,7 +11,7 @@ import pct.utilities.rmath as rm
 class CartpoleData(object):
 
   def __init__(self, loss_fn, loss_smooth):
-    self.global_error= 0
+    self.global_error= None
     self.loss_fn= loss_fn
     self.loss_smooth= loss_smooth
     self.n=1
@@ -21,7 +21,10 @@ class CartpoleData(object):
     self.error=self.loss_fn(current, target)
     self.mean = self.mean+(self.error-self.mean)/self.n
     self.n+=1
-    self.global_error=rm.smooth( self.error, self.global_error, self.loss_smooth) 
+    if self.global_error==None:
+        self.global_error=self.error
+    else:
+        self.global_error=rm.smooth( self.error, self.global_error, self.loss_smooth) 
     #print(self.error, self.global_error)
     return self.global_error
         
