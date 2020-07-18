@@ -98,7 +98,7 @@ class CartpoleTuning(object):
                    print("An optimised control system for this case would have residual error of around 0.30 or less")
                    if training:
                        wts = self.min_weights
-                       print("Minimum loss %4.2f and weights %-10.3f %-10.3f %-10.3f %-10.3f" % (wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
+                       print("Minimum loss %4.2f and weights %-10.3f %-10.3f %-10.3f %-10.3f" % (self.min_loss, wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
 
                                            
                 self.counter.set_limit(epoch) 
