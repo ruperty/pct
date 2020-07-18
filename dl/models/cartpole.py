@@ -43,7 +43,7 @@ class CartpoleTuning(object):
         self.create_model(model_name, trainable)
         self.video_wrap=video_wrap
         self.create_env(env_name, max_episode_steps)
-
+        self.min_loss=1000
         self.create_dataset()
         self.prev_power=0
         
@@ -78,6 +78,11 @@ class CartpoleTuning(object):
             else:
                 loss_value=self.non_training_step(inputs, desired_output)
              
+            if training:
+                if loss_value<self.min_loss:
+                    self.min_loss=loss_value
+                    self.min_weights=self.model.get_weights()
+                    
             self.display(loss_value)
             
             self.counter()
@@ -91,6 +96,10 @@ class CartpoleTuning(object):
                    print("Cartpole failed with a poleangle of %4.2f degrees and global error of %4.2f."
                           % (math.degrees( inputs['perception_pa']), loss_value))
                    print("An optimised control system for this case would have residual error of around 0.30 or less")
+                   if training:
+                       wts = self.min_weights
+                       print("Minimum loss %4.2f and weights %-10.3f %-10.3f %-10.3f %-10.3f" % (wts[0][0],wts[1][0],wts[2][0],wts[3][0]))
+
                                            
                 self.counter.set_limit(epoch) 
                 break 
