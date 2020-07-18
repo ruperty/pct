@@ -37,6 +37,7 @@ class PCTVarType(Enum):
 class CartpoleTuning(object):
 
     def __init__(self, model_name="CartPole", env_name="CartPole-v1", max_episode_steps=100000, trainable=[True, True, True, False], print=True , video_wrap=False):
+        self.verbose=False
         self.print=print
         self.live_display=False
         self.model_name=model_name
@@ -76,6 +77,9 @@ class CartpoleTuning(object):
         
     def batch(self, epoch, batch_size):
         for inputs, desired_output in self.ds_counter.take(batch_size):
+            if self.verbose:
+                print("Epoch ", epoch)
+                print("Inputs ",  inputs)
             if self.training:
                 loss_value=self.training_step(inputs, desired_output)
             else:
@@ -258,7 +262,7 @@ class CartpoleTuning(object):
     def plot_model(self, filename, show_shapes=False):
         keras.utils.plot_model(self.model, filename, show_shapes=show_shapes) 
 
-    def run(self, batch_size):
+    def run(self, batch_size, verbose=False):
         if self.print:
             print("                                   Weights " )
             print("Step  Loss    pole_angle pole_velocity cart_position cart_velocity  " )
