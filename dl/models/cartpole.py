@@ -84,7 +84,10 @@ class CartpoleTuning(object):
                 loss_value=self.training_step(inputs, desired_output)
             else:
                 loss_value=self.non_training_step(inputs, desired_output)
-             
+            
+            if self.verbose:
+                print("Returned batch step with loss of ", loss_value)
+                
             if self.training:
                 if loss_value<self.min_loss:
                     self.min_loss=loss_value
@@ -155,6 +158,8 @@ class CartpoleTuning(object):
                 self.plotter.add_data(0, self.counter.get(), [loss_value, self.data.get_local_error()])
                 self.plotter.draw()
             if self.render:
+                if self.verbose:
+                    print("About to render")
                 self.env.render()
                 
         if self.widget != None:
