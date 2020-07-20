@@ -6,9 +6,46 @@ Created on Sat Jun  6 15:22:55 2020
 """
 
 import tensorflow as tf
+import numpy as np
+from pct.utilities.rmath import sigmoid
 from tensorflow.python.framework import dtypes
 from tensorflow.python.keras.optimizer_v2 import optimizer_v2
 from tensorflow.python.util.tf_export import keras_export
+
+
+
+
+class RegressionCase(object):
+
+  def __init__(self, model, optimizer):
+    self.model = model
+    self.optimizer=optimizer
+    
+
+  def __call__(self):
+    self.model.update(self.optimizer(self.model))
+  
+
+class EcoliPeriodic(object):
+
+  def __init__(self, weights, learning_rate, lossfn):
+    self.previous_loss = 0
+    self.dWeights = np.random.uniform(-1,1,weights)
+    self.lossfn=lossfn
+    self.learning_rate = learning_rate
+
+  def __call__(self, model):
+    current_loss = self.lossfn(model.outputs, model(model.inputs))
+    if current_loss>=self.previous_loss:
+        self.dWeights = np.random.uniform(-1,1,2)
+    
+    self.previous_loss = current_loss
+    self.updates = [sigmoid( current_loss*self.learning_rate * self.dWeights[0], 5, 0.1), 
+                    sigmoid( current_loss*self.learning_rate * self.dWeights[1], 5, 0.1)]
+
+    return self.updates
+
+
 
 
 @keras_export("keras.optimizers.Ecoli")
