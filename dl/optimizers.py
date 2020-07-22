@@ -29,32 +29,40 @@ class RegressionCase(object):
 
 class EcoliPeriodic(object):
 
-  def __init__(self, weights, learning_rate, lossfn):
-    self.previous_loss = tf.constant(None)
+  def __init__(self, weights, learning_rate, lossfn, smooth=0.75, period=1):
+    self.previous_loss = -1
     self.nweights=weights
     self.dWeights = np.random.uniform(-1,1,self.nweights)
     self.lossfn=lossfn
     self.learning_rate = learning_rate
     self.dl=None
     self.dlsmooth=None
+    self.dlsmoothfactor=smooth
+    self.updates=[0,0]
+    self.period=period
+    self.ctr=1
 
   def __call__(self, model):
     current_loss = self.lossfn(model.outputs, model(model.inputs))
-    if current_loss>=self.previous_loss : #or self.previous_loss==None:
-        self.dWeights = np.random.uniform(-1,1,self.nweights)
     
-    """
-    if self.previous_loss!=None:
-        self.dl = current_loss-self.previous_loss
-        if self.dlsmooth==None:
-            self.dlsmooth = self.dl
-        else:
-            self.dlsmooth = smooth( self.dl, self.dlsmooth, 0.99)
-    """
-    self.previous_loss = current_loss
-    self.updates = [sigmoid( current_loss*self.learning_rate * self.dWeights[0], 5, 0.1), 
+    if self.ctr % self.period ==0:
+        
+        if current_loss>=self.previous_loss or self.previous_loss<0 :
+            self.dWeights = np.random.uniform(-1,1,self.nweights)
+            
+            self.updates = [sigmoid( current_loss*self.learning_rate * self.dWeights[0], 5, 0.1), 
                     sigmoid( current_loss*self.learning_rate * self.dWeights[1], 5, 0.1)]
+            
+            if self.previous_loss >= 0:
+                self.dl = current_loss-self.previous_loss
+                if self.dlsmooth==None:
+                    self.dlsmooth = self.dl
+                else:
+                    self.dlsmooth = smooth( self.dl, self.dlsmooth, self.dlsmoothfactor)
+            
+        self.previous_loss = current_loss
 
+    self.ctr+=1
     return self.updates
 
 
