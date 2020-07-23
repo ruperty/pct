@@ -13,6 +13,80 @@ import pct.dl.optimizers as pctopts
 
 import tensorflow as tf
 
+
+
+def ecoli_train_loop(epoch, model, optimizer, counter, case, plotter, slope, lossdata, ecolifigwidge):
+    if epoch <= counter.get_limit():
+        case()
+        plotter.add_data(epoch, model, optimizer)
+        
+        #plotter.draw(model)
+        if epoch % 10 == 0 or optimizer.previous_loss <  1.05:
+            print('Epoch %3d: %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f %10.3f' %
+                (epoch, plotter.Ws[-1], plotter.bs[-1], optimizer.dWeights[0], optimizer.dWeights[1], 
+                 optimizer.updates[0], optimizer.updates[1], optimizer.previous_loss))
+            
+        slope.append(optimizer.dlsmooth)
+        lossdata.append(optimizer.previous_loss)
+        ecolifigwidge.data[0].x=model.inputs
+        ecolifigwidge.data[0].y=model.outputs
+
+        ecolifigwidge.data[1].x=model.inputs
+        ecolifigwidge.data[1].y=model(model.inputs)
+        
+        if epoch % 20 == 0 :
+            ecolifigwidge.data[2].x=plotter.xs
+            ecolifigwidge.data[2].y=plotter.ls
+
+            ecolifigwidge.data[3].x=plotter.xs
+            ecolifigwidge.data[3].y=plotter.dWs
+
+            ecolifigwidge.data[4].x=plotter.xs
+            ecolifigwidge.data[4].y=plotter.dbs
+        
+        if optimizer.previous_loss <  1.05:
+            counter.set_limit(epoch) 
+
+
+
+
+class RegressionModel(object):
+
+  def __init__(self, weights):
+    # Initialize the weights to `5.0` and the bias to `0.0`
+    # In practice, these should be initialized to random values (for example, with `tf.random.normal`)
+    #weights = np.random.uniform(0,1,2)
+    self.W = tf.Variable(weights[0])
+    self.b = tf.Variable(weights[1])
+    TRUE_W = 3.0
+    TRUE_b = 2.0
+    NUM_EXAMPLES = 1000
+    
+    self.inputs  = tf.random.normal(shape=[NUM_EXAMPLES])
+    noise   = tf.random.normal(shape=[NUM_EXAMPLES], stddev=1.0)
+    self.outputs = self.inputs * TRUE_W + TRUE_b + noise
+
+  def __call__(self, x):
+    return self.W * x + self.b
+
+  def update(self, dweights):
+      self.W.assign_sub(dweights[0])
+      self.b.assign_sub(dweights[1])
+
+
+class RegressionCase(object):
+
+  def __init__(self, model, optimizer):
+    self.model = model
+    self.optimizer=optimizer
+    
+
+  def __call__(self):
+    self.model.update(self.optimizer(self.model))
+    
+    
+    
+
 class BaseImage():
     def __init__(self, path):
         self.path = path 

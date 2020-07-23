@@ -15,21 +15,11 @@ from tensorflow.python.util.tf_export import keras_export
 
 
 
-
-class RegressionCase(object):
-
-  def __init__(self, model, optimizer):
-    self.model = model
-    self.optimizer=optimizer
-    
-
-  def __call__(self):
-    self.model.update(self.optimizer(self.model))
   
 
 class EcoliPeriodic(object):
 
-  def __init__(self, weights, learning_rate, lossfn, smooth=0.75, period=1):
+  def __init__(self, weights, learning_rate, lossfn, smooth=0.75, period=1, sigmoid_range=5, sigmoid_scale=0.1):
     self.previous_loss = -1
     self.nweights=weights
     self.dWeights = np.random.uniform(-1,1,self.nweights)
@@ -41,30 +31,47 @@ class EcoliPeriodic(object):
     self.updates=[0,0]
     self.period=period
     self.ctr=1
+    self.period_loss_sum=0
+    self.previous_historical_loss =-1
+    self.sigmoid_range=sigmoid_range
+    self.sigmoid_scale=sigmoid_scale
 
   def __call__(self, model):
     current_loss = self.lossfn(model.outputs, model(model.inputs))
+    print(current_loss.numpy())
+    self.add_period_loss(current_loss)
     
     if self.ctr % self.period ==0:
-        
-        if current_loss>=self.previous_loss or self.previous_loss<0 :
+        self.current_historical_loss = self.get_mean_loss()
+        print("m", self.current_historical_loss.numpy())
+        if self.current_historical_loss >= self.previous_historical_loss  or self.previous_historical_loss <0 :
             self.dWeights = np.random.uniform(-1,1,self.nweights)
             
-            self.updates = [sigmoid( current_loss*self.learning_rate * self.dWeights[0], 5, 0.1), 
-                    sigmoid( current_loss*self.learning_rate * self.dWeights[1], 5, 0.1)]
+            self.updates = [sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights[0], self.sigmoid_range, self.sigmoid_scale), 
+                    sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights[1], self.sigmoid_range, self.sigmoid_scale)]
             
-            if self.previous_loss >= 0:
-                self.dl = current_loss-self.previous_loss
-                if self.dlsmooth==None:
-                    self.dlsmooth = self.dl
-                else:
-                    self.dlsmooth = smooth( self.dl, self.dlsmooth, self.dlsmoothfactor)
+        if self.previous_historical_loss >= 0:
+            self.dl = self.current_historical_loss-self.previous_historical_loss
+            if self.dlsmooth==None:
+                self.dlsmooth = self.dl
+            else:
+                self.dlsmooth = smooth( self.dl, self.dlsmooth, self.dlsmoothfactor)
+
+        self.previous_historical_loss = self.current_historical_loss
             
-        self.previous_loss = current_loss
+            
+    self.previous_loss = current_loss
 
     self.ctr+=1
     return self.updates
 
+  def add_period_loss(self, loss):
+    self.period_loss_sum+=loss        
+    
+  def get_mean_loss(self):
+      self.mean_loss = self.period_loss_sum/self.period
+      self.period_loss_sum=0
+      return self.mean_loss 
 
 
 
