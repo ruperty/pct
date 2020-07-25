@@ -5,7 +5,7 @@ Created on Sat May 30 11:42:36 2020
 @author: rupert
 """
 
-import math
+from numpy import exp
 
 def smooth( newVal, oldVal, weight) :
     return newVal * (1 - weight) + oldVal * weight;
@@ -13,7 +13,7 @@ def smooth( newVal, oldVal, weight) :
 
 
 def sigmoid(x, range, scale) :
-    return -range / 2 + range / (1 + math.exp(-x * scale / range));
+    return -range / 2 + range / (1 + exp(-x * scale / range));
     
 
 

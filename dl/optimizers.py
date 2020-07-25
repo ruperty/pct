@@ -28,7 +28,7 @@ class EcoliPeriodic(object):
     self.dl=None
     self.dlsmooth=None
     self.dlsmoothfactor=smooth
-    self.updates=[0,0]
+    self.updates=np.zeros(weights)
     self.period=period
     self.ctr=1
     self.period_loss_sum=0
@@ -38,17 +38,20 @@ class EcoliPeriodic(object):
 
   def __call__(self, model):
     current_loss = self.lossfn(model.outputs, model(model.inputs))
-    print(current_loss.numpy())
+    #print(current_loss.numpy())
     self.add_period_loss(current_loss)
     
     if self.ctr % self.period ==0:
         self.current_historical_loss = self.get_mean_loss()
-        print("m", self.current_historical_loss.numpy())
+        #print("m", self.current_historical_loss.numpy(), self.previous_historical_loss)
         if self.current_historical_loss >= self.previous_historical_loss  or self.previous_historical_loss <0 :
             self.dWeights = np.random.uniform(-1,1,self.nweights)
             
-            self.updates = [sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights[0], self.sigmoid_range, self.sigmoid_scale), 
-                    sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights[1], self.sigmoid_range, self.sigmoid_scale)]
+            
+            self.updates = sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights, self.sigmoid_range, self.sigmoid_scale)
+            
+            #self.updates = [sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights[0], self.sigmoid_range, self.sigmoid_scale), 
+             #       sigmoid( self.current_historical_loss  *self.learning_rate * self.dWeights[1], self.sigmoid_range, self.sigmoid_scale)]
             
         if self.previous_historical_loss >= 0:
             self.dl = self.current_historical_loss-self.previous_historical_loss
@@ -58,7 +61,9 @@ class EcoliPeriodic(object):
                 self.dlsmooth = smooth( self.dl, self.dlsmooth, self.dlsmoothfactor)
 
         self.previous_historical_loss = self.current_historical_loss
-            
+    #else:
+    #    self.updates=np.zeros(self.nweights)
+        
             
     self.previous_loss = current_loss
 
