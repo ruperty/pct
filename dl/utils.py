@@ -13,15 +13,45 @@ import pct.dl.optimizers as pctopts
 
 import tensorflow as tf
 
-
-
-def ecoli_train_loop(epoch, model, optimizer, counter, case, plotter, slope, lossdata, ecolifigwidge):
+def ecoli_continuous_train_loop(epoch, model, optimizer, counter, case, plotter, slope, lossdata, ecolifigwidge, prnt=10):
     if epoch <= counter.get_limit():
         case()
         plotter.add_data(epoch, model, optimizer)
         
         #plotter.draw(model)
-        if epoch % 10 == 0 or optimizer.previous_loss <  1.05:
+        if epoch % prnt == 0 or optimizer.previous_loss <  1.05:
+            print('Epoch %3d: %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f %10.3f  %8.2f %8.3f' %
+                (epoch, plotter.Ws[-1], plotter.bs[-1], optimizer.dWeights[0], optimizer.dWeights[1], 
+                 optimizer.updates[0], optimizer.updates[1], optimizer.previous_loss, optimizer.slope_error, optimizer.slope_error_accumulator))
+            
+        slope.append(optimizer.dlsmooth)
+        lossdata.append(optimizer.previous_loss)
+        ecolifigwidge.data[0].x=model.inputs
+        ecolifigwidge.data[0].y=model.outputs
+
+        ecolifigwidge.data[1].x=model.inputs
+        ecolifigwidge.data[1].y=model(model.inputs)
+        
+        if epoch % 20 == 0 :
+            ecolifigwidge.data[2].x=plotter.xs
+            ecolifigwidge.data[2].y=plotter.ls
+
+            ecolifigwidge.data[3].x=plotter.xs
+            ecolifigwidge.data[3].y=plotter.dWs
+
+            ecolifigwidge.data[4].x=plotter.xs
+            ecolifigwidge.data[4].y=plotter.dbs
+        
+        if optimizer.previous_loss <  1.05:
+            counter.set_limit(epoch) 
+
+def ecoli_train_loop(epoch, model, optimizer, counter, case, plotter, slope, lossdata, ecolifigwidge, prnt=10):
+    if epoch <= counter.get_limit():
+        case()
+        plotter.add_data(epoch, model, optimizer)
+        
+        #plotter.draw(model)
+        if epoch % prnt == 0 or optimizer.previous_loss <  1.05:
             print('Epoch %3d: %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f %10.3f' %
                 (epoch, plotter.Ws[-1], plotter.bs[-1], optimizer.dWeights[0], optimizer.dWeights[1], 
                  optimizer.updates[0], optimizer.updates[1], optimizer.previous_loss))

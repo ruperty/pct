@@ -15,6 +15,57 @@ from tensorflow.python.util.tf_export import keras_export
 
 
 
+class EcoliContinuous(object):
+
+  def __init__(self, weights, learning_rate, lossfn, ref_slope=-10,  smooth=0.75, sigmoid_range=5, sigmoid_scale=0.1):
+    self.previous_loss = -1
+    self.ref_slope=ref_slope
+    self.tumble_threshold=-50
+    self.nweights=weights
+    self.dWeights = np.random.uniform(-1,1,self.nweights)
+    self.lossfn=lossfn
+    self.learning_rate = learning_rate
+    self.dl=None
+    self.dlsmooth=None
+    self.dlsmoothfactor=smooth
+    self.updates=np.zeros(weights)
+    #self.period=period
+    #self.period_loss_sum=0
+    #self.previous_historical_loss =-1
+    self.sigmoid_range=sigmoid_range
+    self.sigmoid_scale=sigmoid_scale
+    self.slope_error_accumulator=0
+
+  def __call__(self, model):
+    current_loss = self.lossfn(model.outputs, model(model.inputs))
+    #print(current_loss.numpy())
+    
+    if self.previous_loss > 0:
+        self.current_slope=current_loss-self.previous_loss
+    else:
+        self.current_slope=0
+        
+    self.slope_error=self.ref_slope-self.current_slope
+    
+    self.slope_error_accumulator += self.slope_error
+    #print(self.slope_error_accumulator )
+    
+    if self.slope_error_accumulator < self.tumble_threshold  :
+        self.dWeights = np.random.uniform(-1,1,self.nweights)            
+        self.updates = sigmoid( current_loss *self.learning_rate * self.dWeights, self.sigmoid_range, self.sigmoid_scale)
+        self.slope_error_accumulator=0
+                        
+    if self.previous_loss >= 0:
+        if self.dlsmooth==None:
+            self.dlsmooth = self.current_slope
+        else:
+            self.dlsmooth = smooth( self.current_slope, self.dlsmooth, self.dlsmoothfactor)       
+            
+    self.previous_loss = current_loss
+
+    return self.updates
+
+
   
 
 class EcoliPeriodic(object):
