@@ -19,8 +19,11 @@ class EcoliContinuous(object):
 
   def __init__(self, weights, learning_rate, lossfn, ref_slope=-10,  smooth=0.75, sigmoid_range=5, sigmoid_scale=0.1):
     self.previous_loss = -1
+    self.initial_loss=None
     self.ref_slope=ref_slope
-    self.tumble_threshold=-50
+    self.initial_ref_slope=ref_slope
+    self.tumble_threshold=-25
+    self.initial_tumble_threshold=self.tumble_threshold
     self.nweights=weights
     self.dWeights = np.random.uniform(-1,1,self.nweights)
     self.lossfn=lossfn
@@ -34,10 +37,13 @@ class EcoliContinuous(object):
     #self.previous_historical_loss =-1
     self.sigmoid_range=sigmoid_range
     self.sigmoid_scale=sigmoid_scale
-    self.slope_error_accumulator=0
+    self.slope_error_accumulator=self.tumble_threshold
 
   def __call__(self, model):
     current_loss = self.lossfn(model.outputs, model(model.inputs))
+    if self.initial_loss == None:
+        self.initial_loss = current_loss
+    
     #print(current_loss.numpy())
     
     if self.previous_loss > 0:
@@ -47,13 +53,16 @@ class EcoliContinuous(object):
         
     self.slope_error=self.ref_slope-self.current_slope
     
-    self.slope_error_accumulator += self.slope_error
-    #print(self.slope_error_accumulator )
+    if self.slope_error < 0:
+        self.slope_error_accumulator += self.slope_error
     
     if self.slope_error_accumulator < self.tumble_threshold  :
         self.dWeights = np.random.uniform(-1,1,self.nweights)            
         self.updates = sigmoid( current_loss *self.learning_rate * self.dWeights, self.sigmoid_range, self.sigmoid_scale)
         self.slope_error_accumulator=0
+        if current_loss< self.initial_loss:
+            self.ref_slope = self.initial_ref_slope * current_loss / self.initial_loss
+            self.tumble_threshold = self.initial_tumble_threshold * current_loss / self.initial_loss
                         
     if self.previous_loss >= 0:
         if self.dlsmooth==None:
@@ -64,6 +73,28 @@ class EcoliContinuous(object):
     self.previous_loss = current_loss
 
     return self.updates
+
+  def status_string(self):
+      
+      wts = []
+      for i in range(self.nweights):
+          wts.append( '{0:6.2f}'.format(self.dWeights[i])  )
+          
+      ups = []
+      for i in range(self.nweights):
+          ups.append( '{0:6.2f}'.format(self.updates[i])  )
+          
+          
+      #wts_str = join(wts)
+      status = '{} {} {:8.2f} {:8.2f} {:8.2f} {:8.2f} {:8.2f} {:6.2f}'.format(''.join(wts), ''.join(ups),
+               self.previous_loss, self.ref_slope, self.current_slope, self.slope_error, 
+               self.slope_error_accumulator, self.tumble_threshold)
+      
+      return status
+  
+  def header_string(self):
+      header = '  dW    db     dWc   dbc    loss     ref      perc      err      acc'
+      return header
 
 
   

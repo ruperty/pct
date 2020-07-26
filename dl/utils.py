@@ -20,9 +20,8 @@ def ecoli_continuous_train_loop(epoch, model, optimizer, counter, case, plotter,
         
         #plotter.draw(model)
         if epoch % prnt == 0 or optimizer.previous_loss <  1.05:
-            print('Epoch %3d: %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f %10.3f  %8.2f %8.3f' %
-                (epoch, plotter.Ws[-1], plotter.bs[-1], optimizer.dWeights[0], optimizer.dWeights[1], 
-                 optimizer.updates[0], optimizer.updates[1], optimizer.previous_loss, optimizer.slope_error, optimizer.slope_error_accumulator))
+            print('Epoch %3d: %s %s ' %
+                (epoch, model.status_string(), optimizer.status_string()))
             
         slope.append(optimizer.dlsmooth)
         lossdata.append(optimizer.previous_loss)
@@ -102,6 +101,16 @@ class RegressionModel(object):
   def update(self, dweights):
       self.W.assign_sub(dweights[0])
       self.b.assign_sub(dweights[1])
+     
+  def status_string(self):
+      status = '{:6.2f} {:6.2f}'.format(self.W.numpy(), self.b.numpy())
+      return status
+         
+  def header_string(self):
+      header = '  W      b  '
+      return header
+
+  
 
 
 class RegressionCase(object):
