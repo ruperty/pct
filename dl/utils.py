@@ -143,10 +143,11 @@ class GreyImage(BaseImage):
     super().__init__( path) 
     
   def open(self):
-    self.image  = Image.open(self.path)
-    self.rchannel = self.image.getchannel("R")
-    self.imageArray =np.asarray(self.rchannel)
-    #print (self.image.format, self.image.size, self.image.mode)
+    img = Image.open(self.path)
+    self.image = img.convert('L')
+    #self.rchannel = self.image.getchannel("R")
+    self.imageArray =np.asarray(self.image)
+    print (self.image.format, self.image.size, self.image.mode)
 
 
 
