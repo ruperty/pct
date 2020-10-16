@@ -33,21 +33,42 @@ def integrator(r, p, g, s, o):
     return o,e
 
 
-def moving_controller(ctr, pole_position_ref, state, gains, slow, figures, position_figure, serror, sfactor, scale, prev_power, plot):
+
+def moving_controller(ctr, pole_position_ref, state, gains, slow, figures, position_figure, serror, sfactor, scale, prev_power, plot, cart_position_ref):
     action =1
     cart_position,    cart_velocity ,    pole_angle , pole_velocity =ou.get_obs(state)        
+    print(f'{pole_angle:.3f} {pole_velocity:.3f} {cart_position:.3f} {cart_velocity:.3f}')    
+    """
+    test=0.2
+    cart_position=test
+    cart_velocity=test 
+    pole_angle=test
+    pole_velocity=test        
+    """
     pole_position_gain, pole_angle_gain,pole_velocity_gain,cart_position_gain,cart_velocity_gain = ou.get_gains(gains)
 
     pole_position=cart_position+math.sin(pole_angle)
     pole_angle_ref,pole_position_error=sigmoid(pole_position_ref, pole_position, pole_position_gain, scale)
     
     pole_velocity_ref,pole_angle_error=proportional(pole_angle_ref, pole_angle, pole_angle_gain)
+    
     cart_position_ref,pole_velocity_error=integrator(pole_velocity_ref, pole_velocity, pole_velocity_gain, slow, cart_position)
+    #cart_position_ref,pole_velocity_error=integrator(pole_velocity_ref, pole_velocity, pole_velocity_gain, slow, cart_position_ref)
+    
     cart_velocity_ref,cart_position_error=proportional(cart_position_ref, cart_position, cart_position_gain)
     power,cart_velocity_error=proportional(cart_velocity_ref, cart_velocity, cart_velocity_gain)
     power= rm.smooth(power, prev_power, 0.75)
+    print(f'pole_position {pole_position_ref:.3f} {pole_position:.3f} {pole_position_error:.3f} {pole_angle_ref:.3f}')    
+    print(f'pole_angle {pole_angle_ref:.3f} {pole_angle:.3f} {pole_angle_error:.3f} {pole_velocity_ref:.3f}')    
+    print(f'pole_velocity {pole_velocity_ref:.3f} {pole_velocity:.3f} {pole_velocity_error:.3f} {cart_position_ref:.3f}  **')    
+    print(f'cart_position {cart_position_ref:.3f} {cart_position:.3f} {cart_position_error:.3f} {cart_velocity_ref:.3f}')    
+    print(f'cart_velocity {cart_velocity_ref:.3f} {cart_velocity:.3f} {cart_velocity_error:.3f} {power:.3f}')    
+
     if power>=0:
         action=0
+
+    print(action)        
+
         
     error=root_sum_squared_error([pole_angle_error,pole_velocity_error,cart_position_error,cart_velocity_error])
     serror=rm.smooth( error, serror, sfactor) 
@@ -64,7 +85,7 @@ def moving_controller(ctr, pole_position_ref, state, gains, slow, figures, posit
         else:    
             position_figure.add_points( ctr, pole_position_ref, pole_position)
 
-    return action, serror, pole_position, power
+    return action, serror, pole_position, power, cart_position_ref
 
 def moving_pole_angle_controller(ctr, pole_angle_ref, state, gains, slow, figures, serror, sfactor, plot):
     action =1
